@@ -34,3 +34,4 @@ public class PingHandler implements HttpHandler {
         }
     }
 }
+
