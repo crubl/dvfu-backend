@@ -1,0 +1,8 @@
+### Наполнить БД: 10 проектов по 100 задач
+POST http://localhost:8080/projects/seed?projects=10&tasksPerProject=100
+
+### Проекты с задачами
+GET http://localhost:8080/projects
+
+### То же самое одним запросом через join fetch
+GET http://localhost:8080/projects/join-fetch
