@@ -1,0 +1,45 @@
+### Создать задачу
+POST http://localhost:8080/tasks
+Content-Type: application/json
+
+{
+  "title": "Подготовить лекцию"
+}
+
+### Первая страница (по умолчанию 20 штук, сортировка по id)
+GET http://localhost:8080/tasks
+
+### Страница с сортировкой
+GET http://localhost:8080/tasks?page=2&size=5&sort=title,desc
+
+### Только невыполненные
+GET http://localhost:8080/tasks?done=false&size=5
+
+### Одна задача
+GET http://localhost:8080/tasks/1
+
+### Обновить задачу целиком
+PUT http://localhost:8080/tasks/1
+Content-Type: application/json
+
+{
+  "title": "Прочитать лекцию",
+  "done": false
+}
+
+### Отметить выполненной
+PATCH http://localhost:8080/tasks/1/done
+
+### Удалить
+DELETE http://localhost:8080/tasks/1
+
+### Несуществующая задача -> 404
+GET http://localhost:8080/tasks/999
+
+### Пустой title -> 400
+POST http://localhost:8080/tasks
+Content-Type: application/json
+
+{
+  "title": ""
+}
