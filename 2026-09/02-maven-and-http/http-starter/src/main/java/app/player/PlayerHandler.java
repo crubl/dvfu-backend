@@ -26,7 +26,17 @@ public class PlayerHandler implements HttpHandler {
 
             if (path.equals("/players") || path.equals("/players/")) {
                 if (method.equals("GET")) {
-                    byte[] body = mapper.writeValueAsBytes(service.getAll(null));
+                    String query = exchange.getRequestURI().getQuery();
+                    String type = null;
+                    if (query != null) {
+                        for (String param : query.split("&")) {
+                            String[] kv = param.split("=", 2);
+                            if (kv[0].equals("type") && kv.length == 2) {
+                                type = kv[1];
+                            }
+                        }
+                    }
+                    byte[] body = mapper.writeValueAsBytes(service.getAll(type));
                     sendResponse(exchange, 200, body);
                 }
                 else if (method.equals("POST")) {
@@ -39,6 +49,18 @@ public class PlayerHandler implements HttpHandler {
             }
 
             String[] parts = path.split("/");
+            if (parts.length == 4 && parts[3].equals("exp") && method.equals("POST")) {
+                int id = Integer.parseInt(parts[2]);
+                Map<?, ?> bodyMap = readBody(exchange);
+                Object amountObj = bodyMap.get("amount");
+                if (!(amountObj instanceof Number)) {
+                    throw new ValidationException("Поле amount обязательно и должно быть числом");
+                }
+                long amount = ((Number) amountObj).longValue();
+                Player p = service.addExp(id, amount);
+                sendResponse(exchange, 200, mapper.writeValueAsBytes(p));
+                return;
+            }
             if (parts.length == 3) {
                 int id = Integer.parseInt(parts[2]);
                 if (method.equals("GET")) {

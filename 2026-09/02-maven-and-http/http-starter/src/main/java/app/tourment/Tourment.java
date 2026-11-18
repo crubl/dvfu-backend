@@ -45,8 +45,15 @@ public abstract class Tourment {
         this.name = name;
     }
 
-    public void changeStatus() {
-        if (status == Status.Open) { this.status = Status.Going; }
+    public void changeStatus(int registeredCount) {
+        if (status == Status.Open) {
+            if (registeredCount < minPlayers) {
+                throw new ConflictException(
+                        "Недостаточно участников для старта: требуется " + minPlayers
+                                + ", зарегистрировано " + registeredCount);
+            }
+            this.status = Status.Going;
+        }
         else if (status == Status.Going) { this.status = Status.Finished; }
         else { throw new ConflictException("Турнир уже закончился и возобновить его нельзя"); }
     }

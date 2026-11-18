@@ -48,8 +48,18 @@ public class TourmentService {
         return tourment;
     }
 
+    public Tourment changeStatus(int id) {
+        Tourment tourment = getById(id);
+        long registeredCount = store.registrations.values().stream()
+                .filter(r -> r.getTournamentId() == id)
+                .count();
+        tourment.changeStatus((int) registeredCount);
+        return tourment;
+    }
+
     public void delete(int id) {
         getById(id);
         store.tourments.remove(id);
+        store.registrations.values().removeIf(r -> r.getTournamentId() == id);
     }
 }

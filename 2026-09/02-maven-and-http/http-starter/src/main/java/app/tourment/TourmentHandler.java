@@ -27,7 +27,18 @@ public class TourmentHandler implements HttpHandler {
 
             if (path.equals("/tournaments") || path.equals("/tournaments/")) {
                 if (method.equals("GET")) {
-                    sendResponse(exchange, 200, mapper.writeValueAsBytes(service.getAll(null)));
+                    String query = exchange.getRequestURI().getQuery();
+                    String type = null;
+                    if (query != null) {
+                        for (String param : query.split("&")) {
+                            String[] kv = param.split("=", 2);
+                            if (kv[0].equals("type") && kv.length == 2) {
+                                type = kv[1];
+                            }
+                        }
+                    }
+                    byte[] body = mapper.writeValueAsBytes(service.getAll(type));
+                    sendResponse(exchange, 200, body);
                 }
                 else if (method.equals("POST")) {
                     Map<String, Object> bodyMap = readBody(exchange);
@@ -50,8 +61,7 @@ public class TourmentHandler implements HttpHandler {
                 int id = Integer.parseInt(parts[2]);
 
                 if (parts.length == 4 && parts[3].equals("status") && method.equals("POST")) {
-                    Tourment t = service.getById(id);
-                    t.changeStatus();
+                    Tourment t = service.changeStatus(id);
                     sendResponse(exchange, 200, mapper.writeValueAsBytes(t));
                     return;
                 }

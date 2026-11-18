@@ -31,6 +31,23 @@ public class RegistrationService {
             throw new ConflictException("Недостаточно опыта. Требуется: " + tourment.getMinExp() + ", у вас: " + player.getExp());
         }
 
+        if (tourment.getStatus() != Tourment.Status.Open) {
+            throw new ConflictException(
+                    "Регистрация на турнир невозможна: статус турнира — " + tourment.getStatus()
+                            + ", регистрация открыта только для статуса Open");
+        }
+
+        long activeCount = store.registrations.values().stream()
+                .filter(r -> r.getPlayerId() == playerId)
+                .map(r -> store.tourments.get(r.getTournamentId()))
+                .filter(t -> t != null && t.getStatus() != Tourment.Status.Finished)
+                .count();
+        if (activeCount >= player.maxActiveTourments()) {
+            throw new ConflictException(
+                    "Достигнут лимит активных турниров для игрока типа " + player.type()
+                            + ": " + player.maxActiveTourments());
+        }
+
         int id = store.registrationSeq.getAndIncrement();
         Registration reg = new Registration(id, tournamentId, playerId);
         store.registrations.put(id, reg);

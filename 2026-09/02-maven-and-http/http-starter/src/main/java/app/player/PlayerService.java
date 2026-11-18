@@ -46,8 +46,15 @@ public class PlayerService {
         return player;
     }
 
+    public Player addExp(int id, long amount) {
+        Player player = getById(id);
+        player.addExp(amount);
+        return player;
+    }
+
     public void delete(int id) {
         getById(id);
         store.players.remove(id);
+        store.registrations.values().removeIf(r -> r.getPlayerId() == id);
     }
 }
